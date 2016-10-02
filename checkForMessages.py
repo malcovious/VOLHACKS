@@ -120,21 +120,24 @@ def resolveReference(s, i):
 
 
 def filterExtra(data):
+	newUser = 0
 	if '<@' in data:
 		i = data.find('<')
 		j = data.find('>')
 		if i < j:
 #			print('reference found\n')
 			refName = resolveReference(data, i)
-			if 'has joined the group' in data or 'has join the channel' in data:
-				retData = data[:i] + refName + data[j+1:]
+			if 'has joined the group' in data or 'has joined the channel' in data:
+				retData = data[:i] + data[j+1:]
+				newUser = 1
+				#retData = data[:i] + refName + data[j+1:]
 			else:
 				retData = data[:i] + 'TO ' + refName + ',' + data[j+1:]
 #			print(retData)
 			if '<@' in retData:
 				retData = filterExtra(retData)
-			return retData
-	return data
+			return retData, newUser
+	return data, newUser
 
 
 def printMessages(data):
@@ -144,9 +147,14 @@ def printMessages(data):
 #		print('user is ', user)
 		if not user:
 			user = userIsBot(tmpDict['user'])
-		text = filterExtra(tmpDict['text'])	
+		text, newUser = filterExtra(tmpDict['text'])	
 		#print('{:s}: {:s}\n'.format(user, text))
-		return '{:s} said {:s}\n'.format(user, text)
+		if newUser:
+			string = text
+		else:
+			string = user + ' said ' + text
+		return string
+		#return '{:s} said {:s}\n'.format(user, text)
 
 
 # targetChannel = 'alexatestbotchannel'
@@ -218,9 +226,9 @@ def set_color_in_session(intent, session):
     targetChannel = 'alexatest'
     #seed = (datetime.datetime.now() - datetime.datetime(1970,1,1)).total_seconds()-30
     seed=0
-    type = "group"
+    Type = 'channel' # 'group'
 
-    reqString = getRequestString('groups.history', channel[targetChannel], seed)
+    reqString = getRequestString('channels.history', channel[targetChannel], seed)
     data = checkForNewMessage(reqString)
     data = parseForContent(data)
     speech_output = ""

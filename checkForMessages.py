@@ -93,12 +93,19 @@ def getRecentTimeStamp(data):
 		return float(-1)
 
 
+def separateName(botName):
+	if botName[:-3] == 'bot':
+		botName = botName[:len(botName)-3] + ' ' + botName[:-3]
+	return botName
+
+
 def userIsBot(botID):
 	reqString = getUserInfoString('users.info', botID)
 	data = checkForNewMessage(reqString)
 	data = parseForContent(data)
 	botName = data['user']['name']
-#	print(botName)
+	if 'bot' in botName:
+		botName = separateName(botName, 'bot')
 	return botName
 
 

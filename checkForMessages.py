@@ -46,7 +46,8 @@ def build_response(session_attributes, speechlet_response):
 
 # --------------- Parsing functions -----------------
 
-channel = { 	'alexatestbotchannel' : 'G2J882U4B',
+channel = {	'alexatest' : 'C2JBQAK8W',
+		 	'alexatestbotchannel' : 'G2J882U4B',
 			'announcements' : 'C2AF11A05',
 			'find-a-mentor' : 'C1U1KP472',
 			'general' : 'C156UQVH9',
@@ -57,7 +58,7 @@ channel = { 	'alexatestbotchannel' : 'G2J882U4B',
 
 domain 	  = 'volhacks.slack.com'
 token 	  = 'xoxp-39232845171-86314392160-86347630498-f8e8410c9c343c3876bb2ad2731d0895'
-channelID   = 'alexatestbotchannel'
+#channelID   = 'alexatestbotchannel'
 interval	  = 5
 
 def getUserInfoString(functionName, userID):
@@ -213,7 +214,8 @@ def set_color_in_session(intent, session):
     session_attributes = {}
     should_end_session = True #False
 
-    targetChannel = "alexatestbotchannel"
+    #targetChannel = "alexatestbotchannel"
+    targetChannel = 'alexatest'
     #seed = (datetime.datetime.now() - datetime.datetime(1970,1,1)).total_seconds()-30
     seed=0
     type = "group"

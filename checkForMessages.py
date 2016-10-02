@@ -105,7 +105,7 @@ def userIsBot(botID):
 	data = parseForContent(data)
 	botName = data['user']['name']
 	if 'bot' in botName:
-		botName = separateName(botName, 'bot')
+		botName = separateName(botName)
 	return botName
 
 

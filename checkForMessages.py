@@ -94,8 +94,8 @@ def getRecentTimeStamp(data):
 
 
 def separateName(botName):
-	if botName[:-3] == 'bot':
-		botName = botName[:len(botName)-3] + ' ' + botName[:-3]
+	if botName[-3:] == 'bot':
+		botName = botName[:len(botName)-3] + ' ' + botName[-3:]
 	return botName
 
 

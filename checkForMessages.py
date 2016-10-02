@@ -1,9 +1,7 @@
 # checkForMessages.py
 
-import re
 import json
 import time
-#from time import sleep, ctime
 from http.client import HTTPSConnection
 
 

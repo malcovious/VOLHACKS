@@ -1,5 +1,6 @@
 # checkForMessages.py
 
+import re
 import json
 import time
 #from time import sleep, ctime
@@ -18,8 +19,6 @@ channel = { 	'alexatestbotchannel' : 'G2J882U4B',
 domain 	  = 'volhacks.slack.com'
 token 	  = 'xoxp-39232845171-86314392160-86347630498-f8e8410c9c343c3876bb2ad2731d0895'
 channelID   = 'alexatestbotchannel'
-#groupID     = '&channel=G2J882U4B'
-#channelName = '&channel=' + channel[channelID]
 interval	  = 5
 
 
@@ -50,22 +49,59 @@ def getRecentTimeStamp(data):
 	else:
 		return float(-1)
 
-def translateUser(userID):
-	reqString = getUserInfoString('users.info', userID);
+
+def userIsBot(botID):
+	reqString = getUserInfoString('users.info', botID)
 	data = checkForNewMessage(reqString)
 	data = parseForContent(data)
-	#print(data)
-	userName = data['user']['real_name']
+	botName = data['user']['name']
+#	print(botName)
+	return botName
 
+
+def translateUser(userID):
+	reqString = getUserInfoString('users.info', userID)
+	data = checkForNewMessage(reqString)
+	data = parseForContent(data)
+	userName = data['user']['real_name']
 	return userName
+
+
+def resolveReference(s, i):
+	userID = s[i+2:i+11]
+	s = translateUser(userID)
+	if not s:
+		s = userIsBot(userID)
+#	print(s)
+	return s
+
+
+def filterExtra(data):
+	if '<@' in data:
+		i = data.find('<')
+		j = data.find('>')
+		if i < j:
+#			print('reference found\n')
+			refName = resolveReference(data, i)
+			if 'has joined the group' in data:
+				retData = data[:i] + refName + data[j+1:]
+			else:
+				retData = data[:i] + 'TO ' + refName + ',' + data[j+1:]
+#			print(retData)
+			if '<@' in retData:
+				retData = filterExtra(retData)
+			return retData
+	return data
 
 
 def printMessages(data, targetChannel):
 	for i in range(len(data['messages'])):
 		tmpDict = data['messages'][i]
-		#user = translateUser(tmpDict['user'], channel[targetChannel])
 		user = translateUser(tmpDict['user'])
-		text = tmpDict['text']		
+#		print('user is ', user)
+		if not user:
+			user = userIsBot(tmpDict['user'])
+		text = filterExtra(tmpDict['text'])	
 		print('{:s}: {:s}\n'.format(user, text))
 
 
@@ -73,14 +109,11 @@ def printMessages(data, targetChannel):
 # Type = 'group' | 'channel'
 def getMessages(targetChannel, Type):
 	seed = 0
-#	req = getRequestString(Type + 's.list', channel[targetChannel], seed)
-#	req = checkForNewMessage(req)
-#	req = 
+	
 	while 1:
 		reqString = getRequestString('groups.history', channel[targetChannel], seed)
 		data = checkForNewMessage(reqString)
 		data = parseForContent(data)
-
 		tmp = getRecentTimeStamp(data)
 		if tmp > 0.0:
 			if seed != tmp:

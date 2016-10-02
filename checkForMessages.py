@@ -23,6 +23,10 @@ channelID   = 'alexatestbotchannel'
 interval	  = 5
 
 
+def getUserInfoString(functionName, userID):
+	return '/api/' + functionName + '?token=' + token + '&user=' + userID + '&pretty=1'
+
+
 def getRequestString(functionName, channelID, prevTimeStamp):
 	return '/api/' + functionName + '?token=' + token + '&channel=' + channelID + '&oldest=' + str(prevTimeStamp) + '&pretty=1'
 
@@ -46,14 +50,23 @@ def getRecentTimeStamp(data):
 	else:
 		return float(-1)
 
+def translateUser(userID):
+	reqString = getUserInfoString('users.info', userID);
+	data = checkForNewMessage(reqString)
+	data = parseForContent(data)
+	#print(data)
+	userName = data['user']['real_name']
 
-def printMessages(data):
+	return userName
+
+
+def printMessages(data, targetChannel):
 	for i in range(len(data['messages'])):
 		tmpDict = data['messages'][i]
-		user = tmpDict['user']
-		text = tmpDict['text']
-		
-		print('{:s}: {:s}\n'.format(tmpDict['user'], text))
+		#user = translateUser(tmpDict['user'], channel[targetChannel])
+		user = translateUser(tmpDict['user'])
+		text = tmpDict['text']		
+		print('{:s}: {:s}\n'.format(user, text))
 
 
 # targetChannel = 'alexatestbotchannel'
@@ -71,7 +84,7 @@ def getMessages(targetChannel, Type):
 		tmp = getRecentTimeStamp(data)
 		if tmp > 0.0:
 			if seed != tmp:
-				printMessages(data)
+				printMessages(data, targetChannel)
 				seed = tmp
 
 		time.sleep(interval);

@@ -126,7 +126,7 @@ def filterExtra(data):
 		if i < j:
 #			print('reference found\n')
 			refName = resolveReference(data, i)
-			if 'has joined the group' in data:
+			if 'has joined the group' in data or 'has join the channel' in data:
 				retData = data[:i] + refName + data[j+1:]
 			else:
 				retData = data[:i] + 'TO ' + refName + ',' + data[j+1:]
@@ -155,7 +155,7 @@ def getMessages(targetChannel, Type):
 	seed = 0
 	
 	while 1:
-		reqString = getRequestString('groups.history', channel[targetChannel], seed)
+		reqString = getRequestString('channels.history', channel[targetChannel], seed)
 		data = checkForNewMessage(reqString)
 		data = parseForContent(data)
 		tmp = getRecentTimeStamp(data)

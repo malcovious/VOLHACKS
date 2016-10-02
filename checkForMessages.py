@@ -5,7 +5,6 @@ import json
 import time
 import datetime
 import urllib
-#from http.client import HTTPSConnection
 
 
 # --------------- Helpers that build all of the responses ----------------------
@@ -57,8 +56,6 @@ channel = {	'alexatest' : 'C2JBQAK8W',
 		}
 
 domain 	  = 'volhacks.slack.com'
-token 	  = 'xoxp-39232845171-86314392160-86347630498-f8e8410c9c343c3876bb2ad2731d0895'
-#channelID   = 'alexatestbotchannel'
 interval	  = 5
 
 def getUserInfoString(functionName, userID):
@@ -71,14 +68,8 @@ def getRequestString(functionName, channelID, prevTimeStamp):
 
 def checkForNewMessage(requestString):
 	sock = urllib.urlopen("https://"+domain+requestString)	
-	#target = HTTPSConnection(domain)
-	#requestString = '/api/channels.history?token=xoxp-39232845171-86314392160-86347630498-f8e8410c9c343c3876bb2ad2731d0895' + channelName + '&oldest=' + str(prevTS) + '&pretty=1'
-	#requestString = '/api/groups.history?token=xoxp-39232845171-86314392160-86347630498-f8e8410c9c343c3876bb2ad2731d0895' + channelName + '&oldest=' + str(prevTS) + '&pretty=1'
-	#target.request('GET', requestString)
-	#targetResponse = target.getresponse()
 	text = sock.read()
 	sock.close()
-	#return targetResponse.read()
 	return text
 
 
@@ -137,10 +128,8 @@ def filterExtra(data):
 			if 'has joined the group' in data or 'has joined the channel' in data:
 				retData = data[:i] + data[j+1:]
 				newUser = 1
-				#retData = data[:i] + refName + data[j+1:]
 			else:
 				retData = data[:i] + 'TO ' + refName + ',' + data[j+1:]
-#			print(retData)
 			if '<@' in retData:
 				retData = filterExtra(retData)
 			return retData, newUser
@@ -151,17 +140,14 @@ def printMessages(data):
 	for i in range(len(data['messages'])):
 		tmpDict = data['messages'][i]
 		user = translateUser(tmpDict['user'])
-#		print('user is ', user)
 		if not user:
 			user = userIsBot(tmpDict['user'])
 		text, newUser = filterExtra(tmpDict['text'])	
-		#print('{:s}: {:s}\n'.format(user, text))
 		if newUser:
 			string = user + text
 		else:
 			string = user + ' said ' + text
 		return string
-		#return '{:s} said {:s}\n'.format(user, text)
 
 
 # targetChannel = 'alexatestbotchannel'
@@ -221,17 +207,15 @@ def create_favorite_color_attributes(favorite_color):
 
 
 def set_color_in_session(intent, session):
-    """ Sets the color in the session and prepares the speech to reply to the
-    user.
+    """
+    Sets the color in the session and prepares the speech to reply to the user
     """
 
     card_title = "Slack"
     session_attributes = {}
     should_end_session = True #False
 
-    #targetChannel = "alexatestbotchannel"
     targetChannel = 'alexatest'
-    #seed = (datetime.datetime.now() - datetime.datetime(1970,1,1)).total_seconds()-30
     seed=0
     Type = 'channel' # 'group'
 

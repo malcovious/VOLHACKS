@@ -136,7 +136,7 @@ def filterExtra(data):
 	return data
 
 
-def printMessages(data, targetChannel):
+def printMessages(data):
 	for i in range(len(data['messages'])):
 		tmpDict = data['messages'][i]
 		user = translateUser(tmpDict['user'])
@@ -160,7 +160,7 @@ def getMessages(targetChannel, Type):
 		tmp = getRecentTimeStamp(data)
 		if tmp > 0.0:
 			if seed != tmp:
-				printMessages(data, targetChannel)
+				printMessages(data)
 				seed = tmp
 
 		time.sleep(interval);
@@ -219,11 +219,11 @@ def set_color_in_session(intent, session):
     type = "group"
 
     reqString = getRequestString('groups.history', channel[targetChannel], seed)
-    data = getNewMessage(reqString)
+    data = checkForNewMessage(reqString)
     data = parseForContent(data)
     speech_output = ""
     if len(data["messages"]) > 0:
-        speech_output = formatMessage(data)
+        speech_output = printMessages(data)
     print(speech_output);
     reprompt_text = ""
     '''if 'Color' in intent['slots']:
@@ -310,7 +310,6 @@ def on_intent(intent_request, session):
 
 def on_session_ended(session_ended_request, session):
     """ Called when the user ends the session.
-
     Is not called when the skill returns should_end_session=true
     """
     print("on_session_ended requestId=" + session_ended_request['requestId'] +
@@ -340,7 +339,6 @@ def lambda_handler(event, context):
     '''if event['session']['new']:
         on_session_started({'requestId': event['request']['requestId']},
                            event['session'])
-
     if event['request']['type'] == "LaunchRequest":
         return on_launch(event['request'], event['session'])
     elif event['request']['type'] == "IntentRequest":

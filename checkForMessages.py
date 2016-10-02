@@ -150,7 +150,7 @@ def printMessages(data):
 		text, newUser = filterExtra(tmpDict['text'])	
 		#print('{:s}: {:s}\n'.format(user, text))
 		if newUser:
-			string = text
+			string = user + text
 		else:
 			string = user + ' said ' + text
 		return string
